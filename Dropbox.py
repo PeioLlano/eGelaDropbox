@@ -23,7 +23,7 @@ class Dropbox:
 
     def local_server(self):
         # 8090. portuan entzuten dagoen zerbitzaria sortu
-        listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        listen_socket = socket(AF_INET, SOCK_STREAM)
         listen_socket.bind(('localhost', 8090))
         listen_socket.listen(1)
         print("\t\tSocket listening on port 8090")
@@ -104,14 +104,16 @@ class Dropbox:
         self._root.destroy()
 
     def list_folder(self, msg_listbox, cursor="", edukia_json_entries=[]):
+        if self._path == "/":
+            self._path = ""
         if not cursor:
             print("\t/list_folder")
             uri = 'https://api.dropboxapi.com/2/files/list_folder'
-            datuak = {'path': '', }
+            datuak = {"path": self._path,}
         else:
             print("\t/list_folder/continue")
             uri = 'https://api.dropboxapi.com/2/files/list_folder/continue'
-            datuak = {'cursor': cursor, }
+            datuak = {'cursor': cursor,}
 
         # Call Dropbox API
         goiburuak = {'Host': 'api.dropboxapi.com', 'Authorization': 'Bearer ' + self.access_token,
@@ -148,6 +150,7 @@ class Dropbox:
                      'Authorization': 'Bearer ' + self.access_token,
                      'Content-Type': 'application/octet-stream',
                      'Dropbox-API-Arg': datuak_json, }
+
         erantzuna = requests.post(uri, headers=goiburuak, data=file_data, allow_redirects=False)
         status = erantzuna.status_code
         print("\tStatus: " + str(status))
@@ -196,6 +199,8 @@ class Dropbox:
     def share_folder(self, path, norekinPartekatu):
         print("\n------- KARPETA PARTEKATZEN -----------\n")
         print("\t/share_folder " + path)
+        print('Path: ' + path + '\nPartner: ' + norekinPartekatu)
+
         uri = 'https://api.dropboxapi.com/2/sharing/share_folder'
         datuak = {'path': path, }
 
@@ -278,3 +283,5 @@ class Dropbox:
         print("\t\tTestua: " + str(erantzuna.text))
 
         print("\n ------- PATH-a MUGITZEN -----------\n")
+
+        return status

@@ -34,6 +34,8 @@ class eGela:
         deskribapena = erantzuna.reason
         print(str(kodea) + " " + deskribapena)
 
+        print("##### HTML-aren azterketa... #####")
+
         cookie = erantzuna.headers['Set-Cookie'].split(";")[0]
         print("Set-Cookie: " + cookie)
 
@@ -48,9 +50,6 @@ class eGela:
         action = soup.find('form', {'class': 'm-t-1 ehuloginform'})['action']
         print("Action: " + str(action))
 
-        print("##### HTML-aren azterketa... #####")
-        # sartu kodea hemen
-
         progress = 25
         progress_var.set(progress)
         progress_bar.update()
@@ -61,8 +60,8 @@ class eGela:
         uria = action
         goiburuak = {'Host': 'egela.ehu.eus', 'Cookie': cookie, 'Content-Type': 'application/x-www-form-urlencoded'}
         edukia = {'logintoken': logintoken,
-                  'username': username,
-                  'password': password}
+                  'username': username.get(),
+                  'password': password.get()}
 
         # datuak imprimaki formatua duen kate batean bihurtuko ditut
         # zelan? urllib liburutegia erabiliz
@@ -79,8 +78,8 @@ class eGela:
 
         html = erantzuna.content
 
-        # cookie = erantzuna.headers['Set-Cookie'][0].split(";")[0]
-        if(erantzuna.headers.__contains__('Set-Cookie')):
+        #cookie = erantzuna.headers['Set-Cookie'][0].split(";")[0]
+        if erantzuna.headers.__contains__('Set-Cookie'):
             cookie = erantzuna.headers['Set-Cookie'].split(";")[0]
             print("Set-Cookie: " + cookie)
         else:
@@ -160,7 +159,7 @@ class eGela:
             self._cookiea = cookie
             self._login = 1
             self._ikasgaia = webSistemak
-            #self._root.destroy()
+            self._root.destroy()
 
         else:
             tkMessageBox.showinfo("Alert Message", "Login incorrect!")
@@ -230,7 +229,7 @@ class eGela:
             progress_var.set(progress)
             progress_bar.update()
             time.sleep(0.1)
-            self.get_pdf(self, ref);
+            self.get_pdf(ref);
 
         print(self._refs)
         popup.destroy()
@@ -240,7 +239,12 @@ class eGela:
     def get_pdf(self, selection):
         print("##### PDF-a deskargatzen... #####")
         metodoa = "GET"
-        uria = selection['link']
+        if(isinstance(selection, int)):
+            uria = self._refs[selection]['link']
+            selection = self._refs[selection]
+        else:
+            uria = selection['link']
+
         goiburuak = {'Host': 'egela.ehu.eus', 'Cookie': self._cookiea}
 
         # eskaera bidali eta erantzuna jaso
@@ -256,12 +260,12 @@ class eGela:
         print('     |  ' + selection['izena'] + ' gordetzen...')
 
         print("PDF-aren izena : " + selection['izena'])
-        pdf_file = open(selection['izena'], 'wb')
-        pdf_file.write(pdf_content)
-        pdf_file.close()
+        #pdf_file = open(selection['izena'], 'wb')
+        #pdf_file.write(pdf_content)
+        #pdf_file.close()
 
-        return pdf_name, pdf_file
+        return pdf_name, erantzuna.content
 
-e = eGela
-e.check_credentials(e, sys.argv[1], sys.argv[2])
-e.get_pdf_refs(e)
+#e = eGela
+#e.check_credentials(e, sys.argv[1], sys.argv[2])
+#e.get_pdf_refs(e)

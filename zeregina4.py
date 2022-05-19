@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox as tkMessageBox
 import os
 import eGela
 import Dropbox
@@ -87,6 +88,42 @@ def name_folder(folder_name):
     dropbox._root.destroy()
     dropbox.list_folder(msg_listbox2)
 
+def move_func(fromPath, toPath):
+    if dropbox.move(fromPath, toPath)==200:
+        tkMessageBox.showinfo("Alert Message", "Mugimendua ondo burutu da!")
+    else:
+        tkMessageBox.showinfo("Alert Message", "Ezin da mugimendu hori egin, gogoratu, mugitu nahi den\ndirektorioa, helmuga direktorioan egon behar da")
+    var.set(dropbox._path)
+    dropbox._root.destroy()
+    dropbox.list_folder(msg_listbox2)
+
+def share_folder_funct(partner_name):
+    popup, progress_var, progress_bar = helper.progress("share_folder", "Sharing folder...")
+    progress = 0
+    progress_var.set(progress)
+    progress_bar.update()
+    progress_step = float(100.0 / len(selected_items2))
+
+    for each in selected_items2:
+        if dropbox._path == "/":
+            path = "/" + dropbox._files[each]['name']
+        else:
+            path = dropbox._path + "/" + dropbox._files[each]['name']
+
+        dropbox.share_folder(path, partner_name)
+
+        progress += progress_step
+        progress_var.set(progress)
+        progress_bar.update()
+        newroot.update()
+
+        time.sleep(0.1)
+
+    popup.destroy()
+    var.set(dropbox._path)
+    dropbox._root.destroy()
+    dropbox.list_folder(msg_listbox2)
+
 def create_folder():
     popup = tk.Toplevel(newroot)
     popup.geometry('200x100')
@@ -103,6 +140,78 @@ def create_folder():
     entry_field.bind("<Return>", name_folder)
     entry_field.pack(side=tk.TOP)
     send_button = tk.Button(login_frame, text="Send", command=lambda: name_folder(entry_field.get()))
+    send_button.pack(side=tk.TOP)
+    dropbox._root = popup
+
+def move():
+    from_path = ""
+    to_path = ""
+
+    popup = tk.Toplevel(newroot)
+    popup.geometry('200x100')
+    popup.title('Dropbox')
+    popup.iconbitmap('./favicon.ico')
+    helper.center(popup)
+
+    login_frame = tk.Frame(popup, padx=10, pady=10)
+    login_frame.pack(fill=tk.BOTH, expand=True)
+
+    label = tk.Label(login_frame, text="Move")
+    label.pack(side=tk.TOP)
+    entry_field1 = tk.Entry(login_frame, width=35)
+    entry_field1.bind("<Return>", from_path)
+    entry_field1.pack(side=tk.TOP)
+    entry_field1.insert(0, "From...")
+
+    entry_field2 = tk.Entry(login_frame, width=35)
+    entry_field2.bind("<Return>", to_path)
+    entry_field2.pack(side=tk.TOP)
+    entry_field2.insert(0, "To")
+
+    send_button = tk.Button(login_frame, text="Send", command=lambda: move_func(entry_field1.get(), entry_field2.get()))
+    send_button.pack(side=tk.TOP)
+    dropbox._root = popup
+
+def download_zip():
+    popup, progress_var, progress_bar = helper.progress("dowloading_zip", "Download zip(s)...")
+    progress = 0
+    progress_var.set(progress)
+    progress_bar.update()
+    progress_step = float(100.0 / len(selected_items2))
+
+    for each in selected_items2:
+        if dropbox._path == "/":
+            path = "/" + dropbox._files[each]['name']
+        else:
+            path = dropbox._path + "/" + dropbox._files[each]['name']
+        dropbox.download_zip(path)
+
+        progress += progress_step
+        progress_var.set(progress)
+        progress_bar.update()
+        newroot.update()
+
+        time.sleep(0.1)
+
+    popup.destroy()
+    var.set(dropbox._path)
+
+def share_folder():
+    popup = tk.Toplevel(newroot)
+    popup.geometry('200x100')
+    popup.title('Dropbox')
+    popup.iconbitmap('./favicon.ico')
+    helper.center(popup)
+
+    login_frame = tk.Frame(popup, padx=10, pady=10)
+    login_frame.pack(fill=tk.BOTH, expand=True)
+
+    label = tk.Label(login_frame, text="Share folder")
+    label.pack(side=tk.TOP)
+    entry_field = tk.Entry(login_frame, width=35)
+    entry_field.bind("<Return>", name_folder)
+    entry_field.pack(side=tk.TOP)
+    send_button = tk.Button(login_frame, text="Share", command=lambda: share_folder_funct(entry_field.get()))
     send_button.pack(side=tk.TOP)
     dropbox._root = popup
 
@@ -243,10 +352,16 @@ button2 = tk.Button(frame2, borderwidth=4, text="Delete", width=10, pady=8, comm
 button2.pack(padx=2, pady=2)
 button3 = tk.Button(frame2, borderwidth=4, text="Create folder", width=10, pady=8, command=create_folder)
 button3.pack(padx=2, pady=2)
+button4 = tk.Button(frame2, borderwidth=4, text="Share folder", width=10, pady=8, command=share_folder)
+button4.pack(padx=2, pady=2)
+button5 = tk.Button(frame2, borderwidth=4, text="Download zip", width=10, pady=8, command=download_zip)
+button5.pack(padx=2, pady=2)
+button6 = tk.Button(frame2, borderwidth=4, text="Move", width=10, pady=8, command=move)
+button6.pack(padx=2, pady=2)
 frame2.grid(column=3, row=1, ipadx=10, ipady=10)
 
 for each in pdfs:
-    msg_listbox1.insert(tk.END, each['pdf_name'])
+    msg_listbox1.insert(tk.END, each['izena'])
     msg_listbox1.yview(tk.END)
 
 dropbox.list_folder(msg_listbox2)

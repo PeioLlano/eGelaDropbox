@@ -1,5 +1,5 @@
 import tkinter as tk
-import ttk
+from tkinter import ttk
 
 def center(win):
     win.update_idletasks()
@@ -27,12 +27,12 @@ def progress(tipo, title):
 
     label = tk.Label(popup, text=title)
     label.grid(row=0, column=0)
-    label.pack(side=tk.TOP)
+    #label.pack(side=tk.TOP)
 
     progress_var = tk.DoubleVar()
     progress_bar = ttk.Progressbar(popup, length=200, variable=progress_var, maximum=100)
     progress_bar.grid(row=1, column=0)
-    progress_bar.pack(side=tk.TOP)
+    #progress_bar.pack(side=tk.TOP)
 
     return popup, progress_var, progress_bar
 
