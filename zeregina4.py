@@ -92,7 +92,8 @@ def move_func(fromPath, toPath):
     if dropbox.move(fromPath, toPath)==200:
         tkMessageBox.showinfo("Alert Message", "Mugimendua ondo burutu da!")
     else:
-        tkMessageBox.showinfo("Alert Message", "Ezin da mugimendu hori egin, gogoratu, mugitu nahi den\ndirektorioa, helmuga direktorioan egon behar da")
+        tkMessageBox.showinfo("Alert Message", "Ezin da mugimendu hori egin, gogoratu, mugitu nahi den\ndirektorioa, helmuga direktorioan egon behar da\nAdib: /karpetaizena/fileIzena\n        /besteKarpeta/fileIzena")
+
     var.set(dropbox._path)
     dropbox._root.destroy()
     dropbox.list_folder(msg_listbox2)
@@ -146,6 +147,8 @@ def create_folder():
 def move():
     from_path = ""
     to_path = ""
+
+    tkMessageBox.showinfo("Alert Message","Move erabiltzeko adibidea:\n        /karpetaizena/fileIzena\n        /besteKarpeta/fileIzena")
 
     popup = tk.Toplevel(newroot)
     popup.geometry('200x100')

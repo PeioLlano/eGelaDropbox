@@ -134,7 +134,6 @@ class Dropbox:
             print('\t\t\t Mota:' + each['.tag'])
             print('\t\t\t ID:' + each['id'])
         if edukia_json_dict['has_more']:
-            # sartu kodea hemen
             self.list_folder(self.access_token, edukia_json_dict['cursor'])
 
         self._files = helper.update_listbox2(msg_listbox, self._path, edukia_json_dict)
